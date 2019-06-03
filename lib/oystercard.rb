@@ -11,4 +11,9 @@ class Oystercard
     raise "Reached limit £#{MAXBALANCE}" if @balance + value >= MAXBALANCE
     @balance = @balance + value
   end
+
+  def deduct(value)
+    @balance = @balance - value
+  end
+
 end

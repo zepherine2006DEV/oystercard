@@ -11,4 +11,8 @@ describe Oystercard do
   it 'raises an error if the balance goes above £90' do
     expect { subject.top_up(100) }.to raise_error 'Reached limit £90'
   end
+  it 'deducts the money from balance' do
+    subject.top_up(20)
+    expect(subject.deduct(10)).to eql(10)
+  end
 end

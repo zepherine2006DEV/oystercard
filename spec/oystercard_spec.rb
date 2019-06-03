@@ -15,4 +15,15 @@ describe Oystercard do
     subject.top_up(20)
     expect(subject.deduct(10)).to eql(10)
   end
+  it 'can tell if it is in journey' do
+    expect(subject.in_journey?).to eq false
+  end
+  it 'can touch in at barriers' do
+    subject.touch_in
+    expect(subject.in_journey?).to eq true
+  end
+   it 'can touch out at barriers' do
+    subject.touch_out
+    expect(subject.in_journey?).to eq false
+  end
 end

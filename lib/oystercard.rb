@@ -3,7 +3,10 @@ class Oystercard
   attr_reader :balance
   
   def initialize
-    @balance = balance
+    @balance = 0
   end
-  
+
+  def top_up(value)
+    @balance = @balance + value
+  end
 end

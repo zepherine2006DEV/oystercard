@@ -1,6 +1,21 @@
 require 'oystercard'
 
+
+
 describe Oystercard do
+
+  before(:each) do
+    @topped_up = Oystercard.new
+    @topped_up.top_up(10)  
+  end
+  
+  let(:station) { double("station") }
+
+  it 'saves the entry station to an instance variable when touched in' do
+    @topped_up.touch_in(station)
+    expect(@topped_up.entry_station).to eql(station)
+  end
+
   it 'has a balance of zero' do
     expect(subject.balance).to eq(0)
   end
@@ -23,26 +38,32 @@ describe Oystercard do
     expect(subject).not_to be_in_journey
   end
   it 'can touch in at barriers' do
-    subject.top_up(10)
-    subject.touch_in
-    expect(subject).to be_in_journey
+    @topped_up.touch_in(station)
+    expect(@topped_up).to be_in_journey
   end
 
   it 'can touch out' do
-    subject.top_up(10)
-    subject.touch_in
-    subject.touch_out
-    expect(subject).not_to be_in_journey
+    @topped_up.touch_in(station)
+    @topped_up.touch_out(station)
+    expect(@topped_up).not_to be_in_journey
   end
   it 'raises an error when tapped in with insufficient funds' do
-    expect { subject.touch_in }.to raise_error 'Insufficient balance'
+    expect { subject.touch_in(station) }.to raise_error 'Insufficient balance'
   end
   it 'reduces the balance by the minimum fare when touched out' do
     minimum_balance = Oystercard::MINBALANCE
-    subject.top_up(10)
-    expect { subject.touch_out }.to change { subject.balance }.by -minimum_balance
+    expect { @topped_up.touch_out(station) }.to change { @topped_up.balance }.by -minimum_balance
   end
 
+  it 'stores the station in journey history on touch out' do
+    @topped_up.touch_in(station)
+    @topped_up.touch_out(station)
+    journey_result = [{:entry_station => station, :exit_station => station}]
+    expect(@topped_up.journeys).to eql(journey_result)  
+  end
 
-
+  it 'creates an empty list of journeys on intialisation' do
+    expect(subject.journeys).to eq([])
+  end
+  
 end

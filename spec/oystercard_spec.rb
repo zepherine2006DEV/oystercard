@@ -1,31 +1,46 @@
 require 'oystercard'
 
 describe Oystercard do
-  it 'responds to the balance method' do
-    expect(subject).to respond_to(:balance)
+  it 'has a balance of zero' do
+    expect(subject.balance).to eq(0)
   end
-  it 'increases the balance of the card when the top_up method is used' do
-    subject.top_up(10)
-    expect(subject.balance).to eql(10)
+
+  describe '#top_up' do
+    it { is_expected.to respond_to(:top_up).with(1).argument }
+
+    it 'can top up the balance' do
+      expect{ subject.top_up 1}.to change{ subject.balance }.by 1
+    end
+
+    it 'raises an error if the maximum balance is exceeded' do
+      maximum_balance = Oystercard::MAXIMUM_BALANCE
+      subject.top_up(maximum_balance)
+      expect{ subject.top_up 1 }.to raise_error 'Maximum balance of #{maximum_balance} exceeded'
+    end
   end
-  it 'raises an error if the balance goes above £90' do
-    expect { subject.top_up(100) }.to raise_error 'Reached limit £90'
-  end
-  it 'deducts the money from balance' do
-    subject.top_up(20)
-    expect(subject.deduct(10)).to eql(10)
-  end
-  it 'can tell if it is in journey' do
-    expect(subject.in_journey?).to eq false
+
+  describe '#deduct' do
+    it { is_expected.to respond_to(:deduct).with(1).argument }
+
+    it 'deducts an amount from the balance' do
+      subject.top_up(20)
+      expect{ subject.deduct 3}.to change{ subject.balance }.by -3
+    end
+  end  
+
+  it 'is initially not in a journey' do
+    expect(subject).not_to be_in_journey
   end
   it 'can touch in at barriers' do
     subject.top_up(10)
     subject.touch_in
-    expect(subject.in_journey?).to eq true
+    expect(subject).to be_in_journey
   end
-   it 'can touch out at barriers' do
+
+  it 'can touch out' do
+    subject.touch_in
     subject.touch_out
-    expect(subject.in_journey?).to eq false
+    expect(subject).not_to be_in_journey
   end
   it 'raises an error when tapped in with insufficient funds' do
     expect { subject.touch_in }.to raise_error 'Insufficient balance'

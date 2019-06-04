@@ -1,4 +1,6 @@
 class Oystercard
+
+  MAXIMUM_BALANCE = 90
   
   MAXBALANCE = 90
   MINBALANCE = 1
@@ -10,21 +12,25 @@ class Oystercard
     @in_journey = false
   end
 
-  def top_up(value)
-    raise "Reached limit £#{MAXBALANCE}" if @balance + value >= MAXBALANCE
-    @balance = @balance + value
+  def top_up(amount)
+    fail 'Maximum balance of #{maximum_balance} exceeded' if amount + balance > MAXIMUM_BALANCE
+    @balance += amount
   end
 
-  def deduct(value)
-    @balance = @balance - value
+  def deduct(amount)
+    @balance -= amount
+  end
+
+  def in_journey?
+    @in_journey
   end
 
   def touch_in
     raise "Insufficient balance" if @balance < MINBALANCE
     @in_journey = true
   end
-
-   def touch_out
+  
+  def touch_out
     @in_journey = false
   end
 endgi

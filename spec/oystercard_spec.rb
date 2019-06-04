@@ -19,11 +19,15 @@ describe Oystercard do
     expect(subject.in_journey?).to eq false
   end
   it 'can touch in at barriers' do
+    subject.top_up(10)
     subject.touch_in
     expect(subject.in_journey?).to eq true
   end
    it 'can touch out at barriers' do
     subject.touch_out
     expect(subject.in_journey?).to eq false
+  end
+  it 'raises an error when tapped in with insufficient funds' do
+    expect { subject.touch_in }.to raise_error 'Insufficient balance'
   end
 end
